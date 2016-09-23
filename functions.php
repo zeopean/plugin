@@ -3,6 +3,182 @@
 use Plugin\Arr;
 use Plugin\Str;
 
+if( ! function_exists('is_card_id'))
+{
+    /**
+     * @param $idcard
+     * @return bool
+     * 检查身份证是否正确
+     */
+    function is_card_id($idcard){
+
+        // 只能是18位
+        if(strlen($idcard)!=18){
+            return false;
+        }
+
+        // 取出本体码
+        $idcard_base = substr($idcard, 0, 17);
+
+        // 取出校验码
+        $verify_code = substr($idcard, 17, 1);
+
+        // 加权因子
+        $factor = array(7, 9, 10, 5, 8, 4, 2, 1, 6, 3, 7, 9, 10, 5, 8, 4, 2);
+
+        // 校验码对应值
+        $verify_code_list = array('1', '0', 'X', '9', '8', '7', '6', '5', '4', '3', '2');
+
+        // 根据前17位计算校验码
+        $total = 0;
+        for($i=0; $i<17; $i++){
+            $total += substr($idcard_base, $i, 1)*$factor[$i];
+        }
+
+        // 取模
+        $mod = $total % 11;
+
+        // 比较校验码
+        if($verify_code == $verify_code_list[$mod]){
+            return true;
+        }else{
+            return false;
+        }
+
+    }
+}
+
+if ( ! function_exists('is_wechat'))
+{
+    /**
+     * @return bool
+     * 检查是否是微信端
+     */
+    function is_wechat(){
+        if(empty($_SERVER['HTTP_USER_AGENT'])) {
+            return false;
+        }
+        if ( strpos($_SERVER['HTTP_USER_AGENT'], 'MicroMessenger') !== false ) {
+            return true;
+        }
+        return false;
+    }
+}
+
+
+if( ! function_exists('is_phone_UA'))
+{
+    /**
+     * 检查是否手机版
+     * @return bool
+     */
+    function is_phone_UA()
+    {
+        $agent = isset($_SERVER['HTTP_USER_AGENT']) ?
+            strtolower($_SERVER['HTTP_USER_AGENT']) :
+            'unknown';
+        $seuas = ['android', 'iphone', 'windows phone'];
+        foreach ($seuas as $ua) {
+            if(strpos($agent, $ua) !== false) {
+                return true;
+            }
+        }
+        return false;
+    }
+}
+
+
+if ( ! function_exists('xml2array')){
+    /**
+     * 将xml转为array
+     * @param string $xml
+     */
+    function xml2array($xml)
+    {
+        //将XML转为array
+        //禁止引用外部xml实体
+        libxml_disable_entity_loader(true);
+        $values = json_decode(json_encode(simplexml_load_string($xml, 'SimpleXMLElement', LIBXML_NOCDATA)), true);
+        return $values;
+    }
+}
+
+
+if ( ! function_exists('array2xml')){
+    /**
+     * @param $data
+     * @return string
+     * 数组转换为xml
+     */
+    function array2xml($data) {
+        $xml = "<xml>";
+        foreach ($data as $key=>$val)
+        {
+            if (is_numeric($val)){
+                $xml.="<".$key.">".$val."</".$key.">";
+            }else{
+                $xml.="<".$key."><![CDATA[".$val."]]></".$key.">";
+            }
+        }
+        $xml.="</xml>";
+        return $xml;
+    }
+}
+
+
+
+if ( ! function_exists('is_spider'))
+{
+    /**
+     * 检查是否爬虫
+     * @return bool
+     */
+    function is_spider()
+    {
+        $agent = isset($_SERVER['HTTP_USER_AGENT']) ?
+            strtolower($_SERVER['HTTP_USER_AGENT']) :
+            'unknown';
+        $seuas = ['spider', 'googlebot', 'slurp'];
+        foreach ($seuas as $ua) {
+            if(strpos($agent, $ua) !== false) {
+                return true;
+            }
+        }
+        return false;
+    }
+}
+
+if( ! function_exists('format_date')){
+	/**
+	 * @param $date 格式为: 2016-9-21 23:00:00
+	 * @return bool|string
+	 * 格式化时间
+	 */
+	function format_date($date){
+		$created = strtotime($date);
+		$now = time();
+		$judge = $now-$created;
+
+		if($judge && $judge < 300){
+			return '刚刚';
+		}
+		if($judge < 3600){
+			return ceil($judge/60).'分钟前';
+		}
+		if($judge < 24*60*60 ){
+			return ceil($judge/60/60).'小时前';
+		}
+		if($judge < 48*60*60){
+			return '昨天';
+		}
+		if($judge < 365*24*60*60){
+			return date('m-d',$created);
+		}
+		return date('Y-m-d',$created);
+	}
+}
+
+
 if ( ! function_exists('append_config'))
 {
 	/**
