@@ -1,4 +1,4 @@
-<?php namespace Plugin;
+<?php
 
 class Str {
 

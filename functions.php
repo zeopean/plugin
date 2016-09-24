@@ -1,7 +1,7 @@
 <?php
 
-use Plugin\Arr;
-use Plugin\Str;
+require_once 'Arr.php';
+require_once 'Str.php';
 
 if( ! function_exists('is_card_id'))
 {
@@ -271,8 +271,6 @@ if ( ! function_exists('array_collapse'))
 	}
 }
 
-$res = array_collapse([[1, 2, 3], [4, 5, 6,[234,342,324,3]], [7, 8, 9],31,232,2323]);
-var_dump($res);
 
 if ( ! function_exists('array_divide'))
 {
@@ -453,39 +451,6 @@ if ( ! function_exists('array_pull'))
 	function array_pull(&$array, $key, $default = null)
 	{
 		return Arr::pull($array, $key, $default);
-	}
-}
-
-if ( ! function_exists('array_set'))
-{
-	/**
-	 * Set an array item to a given value using "dot" notation.
-	 *
-	 * If no key is given to the method, the entire array will be replaced.
-	 *
-	 * @param  array   $array
-	 * @param  string  $key
-	 * @param  mixed   $value
-	 * @return array
-	 */
-	function array_set(&$array, $key, $value)
-	{
-		return Arr::set($array, $key, $value);
-	}
-}
-
-if ( ! function_exists('array_sort'))
-{
-	/**
-	 * Sort the array using the given callback.
-	 *
-	 * @param  array  $array
-	 * @param  callable  $callback
-	 * @return array
-	 */
-	function array_sort($array, callable $callback)
-	{
-		return Arr::sort($array, $callback);
 	}
 }
 
